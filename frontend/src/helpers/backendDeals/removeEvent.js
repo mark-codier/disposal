@@ -1,11 +1,33 @@
-export default async function removeEvent(id) {
-  try {
-    const response = await fetch("http://localhost:8080/events/" + id, {
+import { json, redirect } from "react-router-dom";
+import { getAuthToken } from "./getAuthFns";
+export default async function removeEvent({ params }) {
+  console.log(params);
+
+  const token = getAuthToken();
+  const response = await fetch(
+    "http://localhost:8080/events/" + params.eventId,
+    {
       method: "delete",
-    //   body: JSON.stringify(event)
+      //   body: JSON.stringify(event)
+      headers: {
+        'Authorization' : `Bearer ${token}`,
+      },
+    }
+  );
+  const res = response.message;
+  console.log(res);
+
+  if (response.status === 401) {
+    console.error(1);
+    throw new Response(JSON.stringify({ message: "Auth error occured!" }), {
+      status: 401,
     });
-    response.then((res) => console.log(res));
-  } catch (error) {
-    console.error(error);
   }
+  if (!response.ok) {
+    throw new Response(JSON.stringify({ message: "An error occured!" }), {
+      status: 500,
+    });
+  }
+
+  return redirect("/events");
 }

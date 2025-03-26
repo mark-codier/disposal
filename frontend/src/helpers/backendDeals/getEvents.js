@@ -1,4 +1,4 @@
-import { json } from "react-router-dom";
+import { defer } from "react-router-dom";
 
 export default async function getEvents() {
   try {
@@ -9,6 +9,7 @@ export default async function getEvents() {
       },
     });
     const data = await response.json();
+
     return data.events; // Return only the events data
   } catch (error) {
     console.error(error);
@@ -18,4 +19,10 @@ export default async function getEvents() {
       status: 500,
     });
   }
+}
+
+export function getEventsDefer() {
+  return defer({
+    events: getEvents(),
+  });
 }

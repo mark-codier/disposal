@@ -1,26 +1,23 @@
-import { Link, useRouteLoaderData, useParams } from "react-router-dom";
-import removeEvent from "../helpers/backendDeals/removeEvent";
+import {
+  Link,
+  useRouteLoaderData,
+  // useParams,
+  useSubmit,
+} from "react-router-dom";
+// import { useState, useEffect } from "react";
+// import getEvents from "../helpers/backendDeals/getEvents";
+// import removeEvent from "../helpers/backendDeals/removeEvent";
 export default function EventDetailPage() {
-  const event = useRouteLoaderData('event-details');
-  const { eventId } = useParams(); // Get event ID from URL params
-  function handleRemove() {
-    removeEvent(eventId);
-  }
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const fetchedEvents = await getEvents(); // Assuming `getEvents` fetches all events
-  //       const foundEvent = fetchedEvents.find((item) => item.id == eventId); // Find event by ID
-  //       setEvent(foundEvent); // Update state with the specific event
-  //     } catch (error) {
-  //       console.error(error);
-  //       // Handle potential errors during fetching
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [eventId]); // Run effect only when `eventId` changes
-
+  const submit = useSubmit();
+  const token = useRouteLoaderData('root');
+  const { event } = useRouteLoaderData("event-details");
+  // console.log(event);
+  const handleRemove = () => {
+    const confirmed = confirm("Are you sure you want to delete?");
+    if (confirmed) {
+      submit(null, { method: "delete" });
+    }
+  };
   return (
     <div className="max-w-lg my-10 mx-auto border-2 rounded-xl bg-white p-10">
       {event ? ( // Render event details only if event is found
@@ -37,8 +34,11 @@ export default function EventDetailPage() {
             </p>
             <p className="text-gray-700">{event.description}</p>
           </div>
-          <button className="m-4 text-red-400" onClick={handleRemove}>Delete this event</button>
-          <Link className="m-4 text-ambed-400" to={'edit'}>Edit this event</Link>
+         {token && <><button onClick={handleRemove}>Delete this event</button>
+          <br />
+          <Link to={"edit"}>Edit this event</Link>
+          </>}
+          {!token && <Link to={'../../auth'}>Sign up</Link>}
         </div>
       ) : (
         <p>Loading event...</p>
